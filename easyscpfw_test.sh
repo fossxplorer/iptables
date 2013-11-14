@@ -50,7 +50,7 @@ iptables -A INPUT -m state --state ESTABLISHED,RELATED -j ACCEPT
 ;;
 
 add|remove)
-# Switch inside action add to determine service to add rules for, i.e web/mail/ftp etc
+# Switch inside action add/remove to determine service to add rules for, i.e web/mail/ftp etc
 # Delete rules for given service
 if [[ $action == "add" ]]
 then
@@ -72,6 +72,25 @@ do
 iptables -$switch INPUT -p tcp --dport $port -j ACCEPT
 done
 ;;
+
+mail)
+for port in ${mail[@]}
+do
+#iptables -A INPUT -p tcp --dport $port -j ACCEPT                                                                                                                   
+iptables -$switch INPUT -p tcp --dport $port -j ACCEPT
+done
+;;
+
+dns)
+for port in ${dns[@]}
+do
+#iptables -A INPUT -p tcp --dport $port -j ACCEPT                                                                                                                   
+iptables -$switch INPUT -p tcp --dport $port -j ACCEPT
+done
+;;
+
+
+
 
 ftp)
 for port in ${ftp[@]}
