@@ -33,9 +33,11 @@ daemonports=(
 #
 # Print the whole key->value
 #
-for i in ${daemonports[@]}; do echo $i;done
+#for i in ${daemonports[@]}; do echo $i;done
+
+#First switch to determine rule action, i.e initial/add/remove
 case $arg1 in
-add)
+intial)
 echo "Adding rules"
 #
 # iptables example configuration script
@@ -71,14 +73,31 @@ iptables -A INPUT -m state --state ESTABLISHED,RELATED -j ACCEPT
 #
 #iptables -L -v
 ;;
+add|remove)
+# Switch inside action add to determine service to add rules for, i.e web/mail/ftp etc
+#                                                                                                                                                                   # Delete a rule                                                                                                                                                     #   
+if [[ $arg1 == "add" ]]
+then
+    switch="A"
+    actiontext="Adding"
+elif [[ $arg1 == "remove" ]]
+then
+    switch="D"
+    actiontext="Removing"
+fi
 
-remove)
-echo "Delete rules"
-
-
-#
-# Delete a rule 
-#
-iptables -D INPUT -p tcp --dport 7777 -j ACCEPT
+case $arg2 in
+web)
+echo "$actiontext $arg2 and ports ${web[@]}"
+for port in ${web[@]}
+do
+#iptables -A INPUT -p tcp --dport $port -j ACCEPT
+iptables -$switch INPUT -p tcp --dport $port -j ACCEPT
+done
 ;;
 esac
+
+;;
+esac
+
+
