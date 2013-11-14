@@ -13,6 +13,7 @@ smtp="25 587 465"
 imap="143 993"
 pop="110 995"
 bind="53"
+proftpd="21"
 #
 # service group and corresponding ports which can be from multiple daemons 
 #
@@ -20,6 +21,7 @@ web="$httpd $easyscp"
 mail="$smtp $imap $pop"
 ssh="$sshd"
 dns="$bind"
+ftp="$proftpd"
 #
 # Associative array with services as keys and their corresponding ports as value.
 #
@@ -29,6 +31,7 @@ daemonports=(
 [mail]="$mail"
 [ssh]="$ssh"
 [dns]="$dns"
+[ftp]="$ftp"
 )
 #
 # Print the whole key->value
@@ -67,7 +70,7 @@ iptables -A INPUT -m state --state ESTABLISHED,RELATED -j ACCEPT
 #
 # Save settings
 #
-/sbin/service iptables save
+/sbin/service iptables save > /dev/null
 #
 #List rules
 #
@@ -95,7 +98,15 @@ do
 iptables -$switch INPUT -p tcp --dport $port -j ACCEPT
 done
 ;;
+ftp)
+for port in ${ftp[@]}
+do
+#iptables -A INPUT -p tcp --dport $port -j ACCEPT                                                                                                                   
+iptables -$switch INPUT -p tcp --dport $port -j ACCEPT
+done
+;;
 esac
+/sbin/service iptables save > /dev/null
 
 ;;
 esac
